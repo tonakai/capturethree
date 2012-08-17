@@ -3,8 +3,9 @@
  */
 
 var express = require('express');
-var app = module.exports = express.createServer();
-var io = require('socket.io').listen(app);
+var app = module.exports= express();
+var nowjs = require("now");
+var everyone;
 
 require('./public/core.js');
 
@@ -49,15 +50,7 @@ app.get('/test', function(req, res) {
 
 // Only listen on $ node app.js
 if (!module.parent) {
-    app.listen(process.env.C9_PORT);
-    console.log("Express server listening on port %d", app.address().port);
+    app.listen(8080);
+    everyone = nowjs.initialize(app);
+    console.log("Express server listening on port %d", 8080);
 }
-
-io.sockets.on('connection', function(socket) {
-    socket.emit('news', {
-        hello: 'world'
-    });
-    socket.on('my other event', function(data) {
-        console.log(data);
-    });
-});

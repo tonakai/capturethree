@@ -1,3 +1,5 @@
+var resources = { 'images':''};
+
 var image;
  window.onload = function(){
             var sources = {
@@ -25,17 +27,18 @@ function loadImages(sources, callback){
         }
         
 function initGame(images) {
-
+    resources.images = images;
+    
     var stage = new Kinetic.Stage({
         container: "container",
         width: 650,
         height: 755
     });
 
-    startGame(stage, images);
+    startGame(stage);
 }
 
-function startGame(stage, images) {
+function startGame(stage) {
     var gameArea = new captureThree();
     var boxLayer = new Kinetic.Layer();
 
@@ -70,20 +73,20 @@ function startGame(stage, images) {
 
     boxLayer.add(box);
 
-    stage.add(gameBackground(gameArea,images));
+    stage.add(gameBackground(gameArea));
     stage.add(messageLayer);
     stage.add(boxLayer);
 }
 
 
-function gameBackground(gameArea,images) {
+function gameBackground(gameArea) {
     var bgLayer = new Kinetic.Layer();
     bgLayer.setY(105);
     for (var x = 0; x < 6; x++) {
         for (var y = 0; y < 6; y++) {
             var bg;
             if (gameArea.area[x][y]) {
-                bg = pieceShape(gameArea.area[x][y], x, y,images);
+                bg = pieceShape(gameArea.area[x][y], x, y);
             }
             else {
                 bg = new Kinetic.Rect({
@@ -98,27 +101,20 @@ function gameBackground(gameArea,images) {
                     id: "empty_" + x + "_" + y
                 });
             }
-            bg.on("mouseover", function() {
-                this.setAlpha(1);
-                bgLayer.draw();
-            });
-            bg.on("mouseout", function() {
-                this.setAlpha(0.2);
-                bgLayer.draw();
-            });
+           
             bgLayer.add(bg);
         }
     }
     return bgLayer;
 }
 
-function pieceShape(piece, x, y,images) {
+function pieceShape(piece, x, y) {
     image = new Kinetic.Image({
         x: 10 + (105 * x),
         y: 10 + (105 * y),
         width: 105,
         height: 105,
-        image: images.tiles,
+        image: resources.images.tiles,
         crop: {
             x: piece.owner * 105,
             y: piece.value * 105,
