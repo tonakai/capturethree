@@ -1,7 +1,9 @@
 var resources = { 'images':''};
-
+var gameArea = new ct.captureThree();
+var stage;
 var image;
- window.onload = function(){
+
+window.onload = function(){
             var sources = {
                 tiles: "/captureThree.png"
             };
@@ -29,17 +31,26 @@ function loadImages(sources, callback){
 function initGame(images) {
     resources.images = images;
     
-    var stage = new Kinetic.Stage({
+    stage = new Kinetic.Stage({
         container: "container",
         width: 650,
         height: 755
     });
 
     startGame(stage);
+    now.updateGame = function(piece,x,y) {
+    	gameArea.area[x][y] = piece;
+    	
+    	var empty = stage.get('#empty_' + x + '_' + y);
+    	console.log(empty);
+    	var bgLayer = empty[0].getLayer();
+    	bgLayer.remove(empty[0]);
+    	bgLayer.add(pieceShape(gameArea.area[x][y], x, y));
+    	bgLayer.draw();    	
+    }
 }
 
 function startGame(stage) {
-    var gameArea = new captureThree();
     var boxLayer = new Kinetic.Layer();
 
     var messageLayer = new Kinetic.Layer();
@@ -63,12 +74,15 @@ function startGame(stage) {
         //var centery = box.y + ((box.height+100) /2);
     });
     box.on("dragend", function() {
-        writeMessage(messageLayer, "dragend");
         var centerx = this.getX() + (box.getWidth() / 2);
         var centery = this.getY() + (box.getHeight() / 2);
+        var x = Math.floor(centerx / 105);
+        var y = Math.floor(centery / 105) -1; //first row doesn't count
         this.setX(Math.floor(centerx / 105) * 105 + 10);
         this.setY(Math.floor(centery / 105) * 105 + 10);
         boxLayer.draw();
+        writeMessage(messageLayer, "dragend " + x + ", " +y);
+        now.movePiece(x,y);
     });
 
     boxLayer.add(box);
